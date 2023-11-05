@@ -35,25 +35,8 @@ services:
       - --entrypoints.https.http.tls.domains[0].main=${DOMAIN}
       - --entrypoints.https.http.tls.domains[0].sans=*.${DOMAIN}
 
-  traefik-certs-dumper:
-    container_name: traefik-cert-dumper
-    image: ldez/traefik-certs-dumper:v2.8.1
-    restart: always
-    entrypoint: sh -c '
-      apk add jq
-      ; while ! [ -e /data/acme.json ]
-      || ! [ `jq ".[] | .Certificates | length" /data/acme.json` != 0 ]; do
-      sleep 1
-      ; done
-      && traefik-certs-dumper file --version v2 --watch
-      --source /data/acme.json --dest /data/certs'
-    volumes:
-      - letsencrypt:/data
-
 volumes:
   letsencrypt:
-    driver: local
-  certificates:
     driver: local
 
 networks:
