@@ -15,9 +15,9 @@ services:
       LLDAP_JWT_SECRET: ${LLDAP_JWT_SECRET}
       LLDAP_LDAP_USER_PASS: ${LLDAP_LDAP_USER_PASS}
       LLDAP_LDAP_BASE_DN: ${LLDAP_LDAP_BASE_DN}
-      # LLDAP_LDAPS_OPTIONS__ENABLED: true
-      # LLDAP_LDAPS_OPTIONS__CERT_FILE: ${PATH_TO_CERT_FILE}
-      # LLDAP_LDAPS_OPTIONS__KEY_FILE: ${PATH_TO_KEY_FILE}
+      LLDAP_LDAPS_OPTIONS__ENABLED: true
+      LLDAP_LDAPS_OPTIONS__CERT_FILE: ${PATH_TO_CERT_FILE}
+      LLDAP_LDAPS_OPTIONS__KEY_FILE: ${PATH_TO_KEY_FILE}
     labels:
       traefik.enable: true
       traefik.docker.network: traefik
@@ -25,6 +25,7 @@ services:
       traefik.http.routers.${SERVICE}.entrypoints: https
       traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
       traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
+    user: 0:0
 
 volumes:
   data:
