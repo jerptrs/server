@@ -1,0 +1,28 @@
+services:
+  portainer:
+    container_name: ${SERVICE}
+    image: portainer/portainer-ee:latest
+    restart: always
+    ports:
+      -
+    volumes:
+      - data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.routers.${SERVICE}.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.${SERVICE}.entrypoints: https
+      traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
+      traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
+    environment:
+      TZ: ${TZ}
+
+volumes:
+  data:
+    driver: local
+
+networks:
+  traefik:
+    external: true
