@@ -17,7 +17,7 @@ services:
       - traefik.http.services.${SERVICE}.loadbalancer.server.port=${DYNMAP_PORT}
     environment:
       EULA: TRUE
-      MEMORYSIZE: 8G
+      MEMORY: 8G
       PAPERMC_FLAGS: ""
       TZ: ${TZ}
       TYPE: PAPER
