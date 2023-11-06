@@ -4,7 +4,7 @@ services:
     image: portainer/portainer-ee:latest
     restart: always
     ports:
-      -
+      - 
     volumes:
       - data:/data
       - /var/run/docker.sock:/var/run/docker.sock
