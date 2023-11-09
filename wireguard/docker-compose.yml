@@ -1,0 +1,59 @@
+services:
+  boringtun:
+    container_name: ${SERVICE}
+    image: ghcr.io/ntkme/boringtun:edge
+    restart: always
+    volumes:
+      - /dev/net/tun:/dev/net/tun
+      - config:/etc/wireguard
+    networks:
+      - wireguard
+    command:
+      - wg0
+    network_mode: service:wireguard-ui
+    cap_add:
+      - NET_ADMIN
+
+  wireguard-ui:
+    container_name: ${SERVICE}-ui
+    image: ngoduykhanh/wireguard-ui:latest
+    restart: always
+    ports:
+      - 51820:51820/udp
+    volumes:
+      - db:/app/db
+      - config:/etc/wireguard
+    networks:
+      - traefik
+      - wireguard
+    labels:
+      traefik.enable: true
+      traefik.http.routers.${SERVICE}.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.${SERVICE}.entrypoints: https
+      traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
+      traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
+    environment:
+      - SESSION_SECRET
+      - WGUI_USERNAME=${WGUI_USERNAME}
+      - WGUI_PASSWORD=${WGUI_PASSWORD}
+      - WG_CONF_TEMPLATE
+      - WGUI_MANAGE_START=true
+      - WGUI_MANAGE_RESTART=true
+    cap_add:
+      - NET_ADMIN
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+
+volumes:
+  config:
+    driver: local
+  db:
+    driver: local
+
+networks:
+  traefik:
+    external: true
+  wiregaurd:
+    external: true

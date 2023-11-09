@@ -1,0 +1,41 @@
+services:
+  bookstack:
+    container_name: ${SERVICE}
+    image: lscr.io/linuxserver/bookstack
+    restart: unless-stopped
+    volumes:
+      - data:/config
+    networks:
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.routers.${SERVICE}.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.${SERVICE}.entrypoints: https
+      traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
+      traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - APP_URL=${DOMAIN}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASSWORD}
+      - DB_DATABASE=${DB_NAME}
+    depends_on:
+      - db
+
+  db:
+    image: lscr.io/linuxserver/mariadb
+    container_name: ${SERVICE}-db
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=<yourdbpass>
+      - TZ=Europe/London
+      - MYSQL_DATABASE=bookstackapp
+      - MYSQL_USER=bookstack
+      - MYSQL_PASSWORD=<yourdbpass>
+    volumes:
+      - ./bookstack_db_data:/config
+    restart: unless-stopped

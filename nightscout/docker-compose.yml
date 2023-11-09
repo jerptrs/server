@@ -1,0 +1,52 @@
+services:
+  mongo:
+    container_name: ${SERVICE}-db
+    image: mongo:4.4
+    restart: always
+    volumes:
+      - db:/data/db:cached
+    networks:
+      - database
+    logging: *default-logging
+
+  nightscout:
+    container_name: ${SERVICE}
+    image: nightscout/cgm-remote-monitor:latest
+    restart: always
+    networks:
+      - traefik
+      - database
+    labels:
+      traefik.enable: true
+      traefik.http.routers.${SERVICE}.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.${SERVICE}.entrypoints: https
+      traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
+      traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
+    environment:
+      NODE_ENV: production
+      TZ: ${TZ}
+      INSECURE_USE_HTTP: 'true'
+      MONGO_CONNECTION: mongodb://mongo:27017/nightscout
+      API_SECRET: ${API_SECRET}
+      ENABLE: careportal rawbg iob
+      AUTH_DEFAULT_ROLES: denied
+    logging: *default-logging
+    depends_on:
+      - mongo
+
+volumes:
+  db:
+    driver: local
+
+networks:
+  traefik:
+    external: true
+  database:
+    external: true
+
+x-logging:
+  &default-logging
+  options:
+    max-size: '10m'
+    max-file: '5'
+  driver: json-file
