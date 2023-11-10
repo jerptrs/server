@@ -1,5 +1,5 @@
 services:
-  boringtun:
+  wireguard:
     container_name: ${SERVICE}
     image: linuxserver/wireguard:latest
     restart: always
