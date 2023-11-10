@@ -8,6 +8,8 @@ services:
       - config:/etc/wireguard
     # networks:
     #   - wireguard
+    labels:
+      traefik.enable: false
     command:
       - wg0
     network_mode: service:wireguard-ui
