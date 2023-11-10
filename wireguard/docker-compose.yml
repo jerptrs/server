@@ -44,7 +44,7 @@ services:
         max-size: 50m
     depends_on:
       - ${SERVICE}
-    network_mode: service:${SERVICE}
+    network_mode: service:wireguard
 
 volumes:
   config:
