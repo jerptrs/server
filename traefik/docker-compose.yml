@@ -1,6 +1,6 @@
 services:
   traefik:
-    container_name: traefik
+    container_name: ${SERVICE}
     image: traefik:v2.6
     restart: always
     ports:
@@ -22,7 +22,7 @@ services:
       - --api.insecure=false
       - --certificatesresolvers.letsencrypt.acme.dnschallenge=true
       - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
-      - --certificatesresolvers.letsencrypt.acme.email=$ACME_EMAIL
+      - --certificatesresolvers.letsencrypt.acme.email=${$ACME_EMAIL}
       - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
       # http
       - --entrypoints.http.address=:${HTTP_PORT}
@@ -41,7 +41,10 @@ services:
       - 1.0.0.1
 
   traefik-certs-dumper:
+    container_name: ${SERVICE}-cert-dumper
     image: ldez/traefik-certs-dumper:v2.8.1
+    volumes:
+      - letsencrypt:/data
     entrypoint: sh -c '
       apk add jq
       ; while ! [ -e /data/acme.json ]
@@ -50,8 +53,6 @@ services:
       ; done
       && traefik-certs-dumper file --version v2 --watch
       --source /data/acme.json --dest /data/dump --crt-ext=.pem --key-ext=.pem --domain-subdir'
-    volumes:
-      - letsencrypt:/data
 
 volumes:
   letsencrypt:
