@@ -1,6 +1,6 @@
 services:
   boringtun:
-    container_name: ${SERVICE}
+    container_name: ${SERVICE}-boringtun
     image: ghcr.io/ntkme/boringtun:edge
     restart: always
     volumes:
