@@ -1,8 +1,11 @@
 services:
   boringtun:
-    container_name: ${SERVICE}-boringtun
+    container_name: ${SERVICE}
     image: ghcr.io/ntkme/boringtun:edge
     restart: always
+    ports:
+      #- "5000:5000"
+      - "51820:51820/udp"
     volumes:
       - /dev/net/tun:/dev/net/tun
       - config:/etc/wireguard
@@ -10,7 +13,6 @@ services:
       traefik.enable: false
     command:
       - wg0
-    network_mode: service:wireguard-ui
     cap_add:
       - NET_ADMIN
 
@@ -18,9 +20,6 @@ services:
     container_name: ${SERVICE}-ui
     image: ngoduykhanh/wireguard-ui:latest
     restart: always
-    ports:
-      - 5000:5000
-      - 51820:51820/udp
     volumes:
       - db:/app/db
       - config:/etc/wireguard
@@ -45,6 +44,9 @@ services:
       driver: json-file
       options:
         max-size: 50m
+    depends_on:
+      - ${SERVICE}
+    network_mode: service:${SERVICE}-ui
 
 volumes:
   config:
