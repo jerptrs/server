@@ -32,8 +32,10 @@ services:
       - --entrypoints.http.http.redirections.entrypoint.scheme=https
       - --entrypoints.https.http.tls=true
       - --entrypoints.https.http.tls.certResolver=letsencrypt
-      - --entrypoints.https.http.tls.domains[0].main=${DOMAIN}
-      - --entrypoints.https.http.tls.domains[0].sans=*.${DOMAIN}
+      - --entrypoints.https.http.tls.domains[0].main=${DOMAIN0}
+      - --entrypoints.https.http.tls.domains[0].sans=*.${DOMAIN0}
+      - --entrypoints.https.http.tls.domains[0].main=${DOMAIN1}
+      - --entrypoints.https.http.tls.domains[0].sans=*.${DOMAIN1}
 
 volumes:
   letsencrypt:

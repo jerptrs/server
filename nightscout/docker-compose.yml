@@ -1,3 +1,10 @@
+x-logging:
+  &default-logging
+  options:
+    max-size: '10m'
+    max-file: '5'
+  driver: json-file
+
 services:
   mongo:
     container_name: ${SERVICE}-db
@@ -17,11 +24,11 @@ services:
       - traefik
       - database
     labels:
-      traefik.enable: true
-      traefik.http.routers.${SERVICE}.rule: Host(`${DOMAIN}`)
-      traefik.http.routers.${SERVICE}.entrypoints: https
-      traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
-      traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
+      - traefik.enable=true
+      - traefik.http.routers.${SERVICE}.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.${SERVICE}.entrypoints=https
+      - traefik.http.routers.${SERVICE}.tls.certresolver=letsencrypt
+      - traefik.http.services.${SERVICE}.loadbalancer.server.port=${PORT}
     environment:
       NODE_ENV: production
       TZ: ${TZ}
@@ -43,10 +50,3 @@ networks:
     external: true
   database:
     external: true
-
-x-logging:
-  &default-logging
-  options:
-    max-size: '10m'
-    max-file: '5'
-  driver: json-file
