@@ -1,7 +1,7 @@
 services:
   boringtun:
     container_name: ${SERVICE}
-    image: ghcr.io/ntkme/boringtun:edge
+    image: linuxserver/wireguard:latest
     restart: always
     ports:
       #- "5000:5000"
@@ -9,10 +9,14 @@ services:
     volumes:
       - /dev/net/tun:/dev/net/tun
       - config:/etc/wireguard
+    networks:
+      - traefik
     labels:
-      traefik.enable: false
-    command:
-      - wg0
+      traefik.enable: true
+      traefik.http.routers.${SERVICE}.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.${SERVICE}.entrypoints: https
+      traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
+      traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
     cap_add:
       - NET_ADMIN
 
@@ -23,14 +27,8 @@ services:
     volumes:
       - db:/app/db
       - config:/etc/wireguard
-    networks:
-      - traefik
     labels:
-      traefik.enable: true
-      traefik.http.routers.${SERVICE}.rule: Host(`${DOMAIN}`)
-      traefik.http.routers.${SERVICE}.entrypoints: https
-      traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
-      traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
+      traefik.enable: false
     environment:
       - SESSION_SECRET
       - WGUI_USERNAME=${WGUI_USERNAME}
