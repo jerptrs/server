@@ -17,8 +17,13 @@ services:
       traefik.http.routers.${SERVICE}.entrypoints: https
       traefik.http.routers.${SERVICE}.tls.certresolver: letsencrypt
       traefik.http.services.${SERVICE}.loadbalancer.server.port: ${PORT}
+    environment:
+      - SERVERURL=${DOMAIN}
+      - ALLOWEDIPS=0.0.0.0/0
     cap_add:
       - NET_ADMIN
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
 
   wireguard-ui:
     container_name: ${SERVICE}-ui
