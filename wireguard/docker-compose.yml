@@ -6,8 +6,8 @@ services:
     volumes:
       - /dev/net/tun:/dev/net/tun
       - config:/etc/wireguard
-    networks:
-      - wireguard
+    # networks:
+    #   - wireguard
     command:
       - wg0
     network_mode: service:wireguard-ui
@@ -23,9 +23,9 @@ services:
     volumes:
       - db:/app/db
       - config:/etc/wireguard
-    networks:
-      - traefik
-      - wireguard
+    # networks:
+    #   - traefik
+    #   - wireguard
     labels:
       traefik.enable: true
       traefik.http.routers.${SERVICE}.rule: Host(`${DOMAIN}`)
