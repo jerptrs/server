@@ -39,12 +39,14 @@ services:
     dns:
       - 1.1.1.1
       - 1.0.0.1
-
+      
   traefik-certs-dumper:
     container_name: ${SERVICE}-cert-dumper
     image: ldez/traefik-certs-dumper:v2.8.1
     volumes:
       - letsencrypt:/data
+    labels:
+      - traefik.enable=false
     entrypoint: sh -c '
       apk add jq
       ; while ! [ -e /data/acme.json ]
