@@ -36,6 +36,22 @@ services:
       - --entrypoints.https.http.tls.domains[0].sans=*.${DOMAIN0}
       - --entrypoints.https.http.tls.domains[1].main=${DOMAIN1}
       - --entrypoints.https.http.tls.domains[1].sans=*.${DOMAIN1}
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+
+  traefik-certs-dumper:
+    image: ldez/traefik-certs-dumper:v2.8.1
+    entrypoint: sh -c '
+      apk add jq
+      ; while ! [ -e /data/acme.json ]
+      || ! [ `jq ".[] | .Certificates | length" /data/acme.json` != 0 ]; do
+      sleep 1
+      ; done
+      && traefik-certs-dumper file --version v2 --watch
+      --source /data/acme.json --dest /data/dump --crt-ext=.pem --key-ext=.pem --domain-subdir'
+    volumes:
+      - letsencrypt:/data
 
 volumes:
   letsencrypt:
