@@ -12,6 +12,7 @@ services:
     restart: always
     volumes:
       - db:/data/db:cached
+      - config:/data/configdb
     networks:
       - database
     logging: *default-logging
@@ -43,6 +44,8 @@ services:
 
 volumes:
   db:
+    driver: local
+  config:
     driver: local
 
 networks:
